@@ -5,6 +5,15 @@
 
 #include "CorrbolgInventorySaveGame.generated.h"
 
+namespace CorrbolgSaveGame
+{
+	/** Name of the save slot to use when saving data. */
+	const FString SaveSlotName = "CorrbolgSaveSlot";
+
+	/** User index to use when saving data.*/
+	const int SaveUserIndex = 0;
+}
+
 /**
 * SaveGame data for the inventory.
 * Keep in sync with FCorrbolgInventorySaveGameData.
@@ -37,5 +46,4 @@ struct FCorrbolgInventorySaveGameData
 	/** Items saved in the inventory. */
 	UPROPERTY()
 	TArray<FString> SavedStoredItems = TArray<FString>();
-
 };

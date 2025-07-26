@@ -5,14 +5,21 @@
 
 #include "CorrbolgInventoryComponent.generated.h"
 
-class UCorrbolgInventorySaveGame;
+UENUM(BlueprintType)
+enum class ECorrbolgAction : uint8
+{
+	StoreItem,
+	LoadData,
+	SaveData,
+	Log
+};
 
-struct FCorrbolgInventorySaveGameData;
+class UCorrbolgAction;
 
 /**
 * Main entry point to manage an inventory.
 */
-UCLASS( ClassGroup=(Corrbolg), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Corrbolg), meta=(BlueprintSpawnableComponent) )
 class CORRBOLG_API UCorrbolgInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -33,54 +40,24 @@ protected:
 
 #pragma region Manipulation
 public:
-	/** Request the server to store an item from the client. */
-	UFUNCTION(BlueprintCallable, Category = "Core")
-	virtual void StoreItem_Client(const FString& Item);
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	virtual void ExecuteAction_Client(const ECorrbolgAction& Action);
+
+
+	UFUNCTION(Server, Reliable)
+	virtual void ExecuteAction_Server(const ECorrbolgAction& Action);
+	virtual void ExecuteAction_Server_Implementation(const ECorrbolgAction& Action);
 
 protected:
 	/** Container holding all items stored in the inventory.*/
 	UPROPERTY(Replicated)
 	TArray<FString> StoredItems = TArray<FString>();
 
-	/** Stores an item in the inventory. */
-	UFUNCTION(Server, Reliable)
-	virtual void StoreItem_Server(const FString& Item);
-	virtual void StoreItem_Server_Implementation(const FString& Item);
-
 #pragma endregion
 
-#pragma region SaveGame
+#pragma region Actions
 protected:
-	/** Writes the inventory data to the save game. */
-	UFUNCTION(Client, Reliable)
-	virtual void SaveInventory_Client(const FCorrbolgInventorySaveGameData& SaveGameData);
-	virtual void SaveInventory_Client_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData);
-	
-	/** Creates the save game object and sends it to the client for local save. */
-	UFUNCTION(Server, Reliable)
-	virtual void SaveInventory_Server();
-	virtual void SaveInventory_Server_Implementation();
-	
-	/** Reads the inventory data from the save game and sends it to the server for replication. */
-	UFUNCTION(Client, Reliable)
-	virtual void LoadInventory_Client();
-	virtual void LoadInventory_Client_Implementation();
-	
-	/** Request the client for the local save game data. */
-	UFUNCTION(Server, Reliable)
-	virtual void LoadInventory_Server();
-	virtual void LoadInventory_Server_Implementation();
-
-	/** Replicates the received local save game to all clients. */
-	UFUNCTION(Server, Reliable)
-	virtual void OnSaveDataReceived_Server(const FCorrbolgInventorySaveGameData& SaveGameData);
-	virtual void OnSaveDataReceived_Server_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData);
-
-private:
-	/** Name of the save slot to use when saving data. */
-	const FString SaveSlotName = "CorrbolgSaveSlot";
-
-	/** User index to use when saving data.*/
-	const int SaveUserIndex = 0;
+	UPROPERTY(EditDefaultsOnly)
+	TMap<ECorrbolgAction, TSoftClassPtr<UCorrbolgAction>> ActionMapping = TMap<ECorrbolgAction, TSoftClassPtr<UCorrbolgAction>>();
 #pragma endregion
 };

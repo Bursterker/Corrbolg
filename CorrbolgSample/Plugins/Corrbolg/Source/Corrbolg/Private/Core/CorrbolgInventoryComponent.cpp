@@ -1,9 +1,8 @@
 #include "Core/CorrbolgInventoryComponent.h"
 
 #include "Net/UnrealNetwork.h"
-#include "Kismet/GameplayStatics.h"
 
-#include "SaveGame/CorrbolgInventorySaveGame.h"
+#include "Actions/CorrbolgAction.h"
 
 UCorrbolgInventoryComponent::UCorrbolgInventoryComponent()
 {
@@ -23,7 +22,7 @@ void UCorrbolgInventoryComponent::BeginPlay()
 
 	if (IsAuthorative())
 	{
-		LoadInventory_Server_Implementation();
+		ExecuteAction_Server_Implementation(ECorrbolgAction::LoadData);
 	}
 }
 
@@ -33,17 +32,12 @@ bool UCorrbolgInventoryComponent::IsAuthorative() const
 }
 
 #pragma region Manipulation
-void UCorrbolgInventoryComponent::StoreItem_Client(const FString& Item)
+void UCorrbolgInventoryComponent::ExecuteAction_Client(const ECorrbolgAction& Action)
 {
-	if (!ensureMsgf(!Item.IsEmpty(), TEXT("Trying to store an undefined item! This is not supported.")))
-	{
-		return;
-	}
-
-	StoreItem_Server(Item);
+	ExecuteAction_Server(Action);
 }
 
-void UCorrbolgInventoryComponent::StoreItem_Server_Implementation(const FString& Item)
+void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECorrbolgAction& Action)
 {
 	// Verify the call is on the server/authorative client.
 	if (!IsAuthorative())
@@ -51,74 +45,26 @@ void UCorrbolgInventoryComponent::StoreItem_Server_Implementation(const FString&
 		return;
 	}
 
-	StoredItems.Add(Item);
-
-	SaveInventory_Server();
-}
-#pragma endregion
-
-#pragma region SaveGame
-void UCorrbolgInventoryComponent::SaveInventory_Client_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData)
-{
-	UCorrbolgInventorySaveGame* const SaveGameInstance =
-		Cast<UCorrbolgInventorySaveGame>(
-			UGameplayStatics::CreateSaveGameObject(UCorrbolgInventorySaveGame::StaticClass()));
-
-	SaveGameInstance->SavedStoredItems = SaveGameData.SavedStoredItems;
-
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveSlotName, SaveUserIndex);
-}
-
-void UCorrbolgInventoryComponent::SaveInventory_Server_Implementation()
-{
-	// Verify the call is on the server/authorative client.
-	if (!IsAuthorative())
+	const TSoftClassPtr<UCorrbolgAction>* const SoftActionClass = ActionMapping.Find(Action);
+	if (!ensureMsgf(SoftActionClass != nullptr, TEXT("Could not find the action in the action mappings!")))
 	{
 		return;
 	}
 
-	FCorrbolgInventorySaveGameData SaveData = FCorrbolgInventorySaveGameData();
-	SaveData.SavedStoredItems = StoredItems;
+	const UClass* const ActionClass = SoftActionClass->LoadSynchronous();
+	UCorrbolgAction* const ActionInstance = NewObject<UCorrbolgAction>(GetTransientPackage(), ActionClass);
 
-	SaveInventory_Client(SaveData);
-}
+	// TODO: Generate dynamic data for actions that need it. So not each context has "Item" defined.
+	FActionContext Context = FActionContext();
+	Context.StoredItems = &StoredItems;
+	Context.Item = "Apple";
 
-void UCorrbolgInventoryComponent::LoadInventory_Client_Implementation()
-{
-	UCorrbolgInventorySaveGame* const SaveGameInstance =
-		Cast<UCorrbolgInventorySaveGame>(
-			UGameplayStatics::LoadGameFromSlot(SaveSlotName, SaveUserIndex));
+	ActionInstance->Execute_Server(Context);
 
-	if (!IsValid(SaveGameInstance))
+	if(Action != ECorrbolgAction::SaveData && Action != ECorrbolgAction::Log)
 	{
-		return;
+		ExecuteAction_Server_Implementation(ECorrbolgAction::SaveData);
+		ExecuteAction_Server_Implementation(ECorrbolgAction::Log);
 	}
-
-	FCorrbolgInventorySaveGameData SaveGameData = FCorrbolgInventorySaveGameData();
-	SaveGameData.SavedStoredItems = SaveGameInstance->SavedStoredItems;
-
-	OnSaveDataReceived_Server(SaveGameData);
-}
-
-void UCorrbolgInventoryComponent::LoadInventory_Server_Implementation()
-{
-	// Verify the call is on the server/authorative client.
-	if (!IsAuthorative())
-	{
-		return;
-	}
-
-	LoadInventory_Client();
-}
-
-void UCorrbolgInventoryComponent::OnSaveDataReceived_Server_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData)
-{
-	// Verify the call is on the server/authorative client.
-	if (!IsAuthorative())
-	{
-		return;
-	}
-
-	StoredItems = SaveGameData.SavedStoredItems;
 }
 #pragma endregion
