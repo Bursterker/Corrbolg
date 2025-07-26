@@ -5,14 +5,8 @@
 
 #include "CorrbolgInventoryComponent.generated.h"
 
-UENUM(BlueprintType)
-enum class ECorrbolgAction : uint8
-{
-	StoreItem,
-	LoadData,
-	SaveData,
-	Log
-};
+struct FActionContext;
+struct FCorrbolgActionMapping;
 
 class UCorrbolgAction;
 
@@ -29,6 +23,10 @@ public:
 	UCorrbolgInventoryComponent();
 
 protected:
+	/** Container holding all items stored in the inventory.*/
+	UPROPERTY(Replicated)
+	TArray<FString> StoredItems = TArray<FString>();
+
 	/** Registers properties for replication */
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -38,26 +36,20 @@ protected:
 	/** Checks if this lives on a server or authorative client. */
 	virtual bool IsAuthorative() const;
 
-#pragma region Manipulation
+#pragma region Actions
 public:
+	/** Asks the server to perform an action on the inventory. */
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	virtual void ExecuteAction_Client(const ECorrbolgAction& Action);
 
-
+	/** Calls the relevant action to execute on the inventory. */
 	UFUNCTION(Server, Reliable)
 	virtual void ExecuteAction_Server(const ECorrbolgAction& Action);
 	virtual void ExecuteAction_Server_Implementation(const ECorrbolgAction& Action);
 
 protected:
-	/** Container holding all items stored in the inventory.*/
-	UPROPERTY(Replicated)
-	TArray<FString> StoredItems = TArray<FString>();
-
-#pragma endregion
-
-#pragma region Actions
-protected:
+	/** Avaialable actions mapped to execute on the inventory. */
 	UPROPERTY(EditDefaultsOnly)
-	TMap<ECorrbolgAction, TSoftClassPtr<UCorrbolgAction>> ActionMapping = TMap<ECorrbolgAction, TSoftClassPtr<UCorrbolgAction>>();
+	TMap<ECorrbolgAction, FCorrbolgActionMapping> ActionMap = TMap<ECorrbolgAction, FCorrbolgActionMapping>();
 #pragma endregion
 };

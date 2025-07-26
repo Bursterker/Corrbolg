@@ -2,7 +2,7 @@
 
 #include "Net/UnrealNetwork.h"
 
-#include "Actions/CorrbolgAction.h"
+#include "Actions/CorrbolgActionTypes.h"
 
 UCorrbolgInventoryComponent::UCorrbolgInventoryComponent()
 {
@@ -31,7 +31,7 @@ bool UCorrbolgInventoryComponent::IsAuthorative() const
 	return IsValid(GetOwner()) && GetOwner()->HasAuthority();
 }
 
-#pragma region Manipulation
+#pragma region Actions
 void UCorrbolgInventoryComponent::ExecuteAction_Client(const ECorrbolgAction& Action)
 {
 	ExecuteAction_Server(Action);
@@ -45,21 +45,19 @@ void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECor
 		return;
 	}
 
-	const TSoftClassPtr<UCorrbolgAction>* const SoftActionClass = ActionMapping.Find(Action);
-	if (!ensureMsgf(SoftActionClass != nullptr, TEXT("Could not find the action in the action mappings!")))
+	FCorrbolgActionMapping* const ActionMapping = ActionMap.Find(Action);
+	if (!ensureMsgf(ActionMapping != nullptr, TEXT("Could not find the action in the action map!")))
 	{
 		return;
 	}
 
-	const UClass* const ActionClass = SoftActionClass->LoadSynchronous();
-	UCorrbolgAction* const ActionInstance = NewObject<UCorrbolgAction>(GetTransientPackage(), ActionClass);
-
 	// TODO: Generate dynamic data for actions that need it. So not each context has "Item" defined.
 	FActionContext Context = FActionContext();
+	Context.Owner = this;
 	Context.StoredItems = &StoredItems;
 	Context.Item = "Apple";
 
-	ActionInstance->Execute_Server(Context);
+	ActionMapping->ExecuteAction(Context);
 
 	if(Action != ECorrbolgAction::SaveData && Action != ECorrbolgAction::Log)
 	{

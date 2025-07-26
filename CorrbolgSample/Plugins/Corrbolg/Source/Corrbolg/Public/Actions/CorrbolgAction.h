@@ -3,26 +3,9 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 
+#include "Actions/CorrbolgActionTypes.h"
+
 #include "CorrbolgAction.generated.h"
-
-/*
-* Context for CorrbolgActions to provide information on what to execute an action on.
-*/
-USTRUCT(BlueprintType)
-struct FActionContext
-{
-	GENERATED_BODY()
-
-public:
-	/** The inventory to execute an action on. */
-	TArray<FString>* StoredItems = nullptr;
-
-	/** 
-	* Optional item to handle.
-	* TODO: To be replaced with dynamic Data per action (example Save and log don't need an item).
-	*/
-	FString Item = "";
-};
 
 /**
 * Base Interface to perform an action on the CorrbolgInventory.
