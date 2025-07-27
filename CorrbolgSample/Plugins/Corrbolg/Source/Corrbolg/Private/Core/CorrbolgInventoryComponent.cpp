@@ -32,12 +32,12 @@ bool UCorrbolgInventoryComponent::IsAuthorative() const
 }
 
 #pragma region Actions
-void UCorrbolgInventoryComponent::ExecuteAction_Client(const ECorrbolgAction& Action)
+void UCorrbolgInventoryComponent::ExecuteAction_Client(const ECorrbolgAction& Action, const FInstancedStruct& Payload)
 {
-	ExecuteAction_Server(Action);
+	ExecuteAction_Server(Action, Payload);
 }
 
-void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECorrbolgAction& Action)
+void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECorrbolgAction& Action, const FInstancedStruct& Payload)
 {
 	// Verify the call is on the server/authorative client.
 	if (!IsAuthorative())
@@ -51,18 +51,17 @@ void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECor
 		return;
 	}
 
-	// TODO: Generate dynamic data for actions that need it. So not each context has "Item" defined.
 	FActionContext Context = FActionContext();
 	Context.Owner = this;
 	Context.StoredItems = &StoredItems;
-	Context.Item = "Apple";
+	Context.Payload = Payload;
 
 	ActionMapping->ExecuteAction(Context);
 
 	if(Action != ECorrbolgAction::SaveData && Action != ECorrbolgAction::Log)
 	{
-		ExecuteAction_Server_Implementation(ECorrbolgAction::SaveData);
-		ExecuteAction_Server_Implementation(ECorrbolgAction::Log);
+		ExecuteAction_Server_Implementation(ECorrbolgAction::SaveData, Payload);
+		ExecuteAction_Server_Implementation(ECorrbolgAction::Log, Payload);
 	}
 }
 #pragma endregion

@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "StructUtils/InstancedStruct.h"
 
 #include "CorrbolgActionTypes.generated.h"
 
@@ -32,11 +33,8 @@ public:
 	/** The inventory to execute an action on. */
 	TArray<FString>* StoredItems = nullptr;
 
-	/**
-	* Optional item to handle.
-	* TODO: To be replaced with dynamic Data per action (example Save and log don't need an item).
-	*/
-	FString Item = "";
+	/** Additional data specific to the action, will be of a various types. */
+	FInstancedStruct Payload = FInstancedStruct();
 };
 
 /**

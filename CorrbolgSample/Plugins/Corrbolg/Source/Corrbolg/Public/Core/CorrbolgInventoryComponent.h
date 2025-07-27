@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "StructUtils/InstancedStruct.h"
 
 #include "CorrbolgInventoryComponent.generated.h"
 
@@ -40,15 +41,15 @@ protected:
 public:
 	/** Asks the server to perform an action on the inventory. */
 	UFUNCTION(BlueprintCallable, Category = "Action")
-	virtual void ExecuteAction_Client(const ECorrbolgAction& Action);
+	virtual void ExecuteAction_Client(const ECorrbolgAction& Action, const FInstancedStruct& Payload = FInstancedStruct());
 
 	/** Calls the relevant action to execute on the inventory. */
 	UFUNCTION(Server, Reliable)
-	virtual void ExecuteAction_Server(const ECorrbolgAction& Action);
-	virtual void ExecuteAction_Server_Implementation(const ECorrbolgAction& Action);
+	virtual void ExecuteAction_Server(const ECorrbolgAction& Action, const FInstancedStruct& Payload = FInstancedStruct());
+	virtual void ExecuteAction_Server_Implementation(const ECorrbolgAction& Action, const FInstancedStruct& Payload = FInstancedStruct());
 
 protected:
-	/** Avaialable actions mapped to execute on the inventory. */
+	/** Available actions mapped to execute on the inventory. */
 	UPROPERTY(EditDefaultsOnly)
 	TMap<ECorrbolgAction, FCorrbolgActionMapping> ActionMap = TMap<ECorrbolgAction, FCorrbolgActionMapping>();
 #pragma endregion
