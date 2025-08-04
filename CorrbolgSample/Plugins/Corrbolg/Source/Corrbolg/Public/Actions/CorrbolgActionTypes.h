@@ -12,6 +12,7 @@ class UCorrbolgAction;
 UENUM(BlueprintType)
 enum class ECorrbolgAction : uint8
 {
+	RetrieveItem,
 	StoreItem,
 	LoadData,
 	SaveData,
