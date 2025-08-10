@@ -6,7 +6,9 @@
 
 #include "CorrbolgInventoryComponent.generated.h"
 
-struct FActionContext;
+enum class ECorrbolgActionResult : uint8;
+
+struct FCorrbolgActionContext;
 struct FCorrbolgActionMapping;
 
 class UCorrbolgAction;
@@ -52,5 +54,9 @@ protected:
 	/** Available actions mapped to execute on the inventory. */
 	UPROPERTY(EditDefaultsOnly)
 	TMap<ECorrbolgAction, FCorrbolgActionMapping> ActionMap = TMap<ECorrbolgAction, FCorrbolgActionMapping>();
+
+	/** Callback from when any action has finished. */
+	UFUNCTION()
+	virtual void OnActionExecutionFinished(const ECorrbolgActionResult Result) const;
 #pragma endregion
 };

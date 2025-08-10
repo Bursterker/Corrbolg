@@ -4,7 +4,7 @@
 
 #include "SaveGame/CorrbolgInventorySaveGame.h"
 
-void UCorrbolgLoadDataFromClient::Execute_Server_Implementation(const FActionContext& ActionContext)
+void UCorrbolgLoadDataFromClient::Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext)
 {
 	Super::Execute_Server_Implementation(ActionContext);
 

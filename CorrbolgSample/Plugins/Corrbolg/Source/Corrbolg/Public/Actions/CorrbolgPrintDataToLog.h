@@ -14,6 +14,6 @@ class CORRBOLG_API UCorrbolgPrintDataToLog : public UCorrbolgAction
 	GENERATED_BODY()
 	
 public:
-	virtual void Execute_Server_Implementation(const FActionContext& ActionContext) override;
+	virtual void Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext) override;
 
 };

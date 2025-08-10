@@ -15,7 +15,7 @@ class CORRBOLG_API UCorrbolgLoadDataFromClient : public UCorrbolgAction
 {
 	GENERATED_BODY()
 public:
-	virtual void Execute_Server_Implementation(const FActionContext& ActionContext) override;
+	virtual void Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext) override;
 
 protected:
 	/** Reads the inventory data from the save game and sends it to the server for replication. */

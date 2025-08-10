@@ -51,17 +51,24 @@ void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECor
 		return;
 	}
 
-	FActionContext Context = FActionContext();
+	FCorrbolgActionContext Context = FCorrbolgActionContext();
 	Context.Owner = this;
 	Context.StoredItems = &StoredItems;
 	Context.Payload = Payload;
+	Context.Callback = [this](const ECorrbolgActionResult Result){this->OnActionExecutionFinished(Result); };
 
 	ActionMapping->ExecuteAction(Context);
 
+	// TODO: Move to the OnActionExecutionFinished method.
 	if(Action != ECorrbolgAction::SaveData && Action != ECorrbolgAction::Log)
 	{
 		ExecuteAction_Server_Implementation(ECorrbolgAction::SaveData, Payload);
 		ExecuteAction_Server_Implementation(ECorrbolgAction::Log, Payload);
 	}
+}
+
+void UCorrbolgInventoryComponent::OnActionExecutionFinished(const ECorrbolgActionResult Result) const
+{
+	UE_LOG(LogTemp, Log, TEXT("Executed order 66 succesfully!"));
 }
 #pragma endregion

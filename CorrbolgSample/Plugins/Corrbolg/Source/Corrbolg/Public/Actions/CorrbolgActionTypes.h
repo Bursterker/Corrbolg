@@ -20,10 +20,21 @@ enum class ECorrbolgAction : uint8
 };
 
 /*
+* Result of an action that was executed.
+*/
+UENUM(BlueprintType)
+enum class ECorrbolgActionResult : uint8
+{
+	Success,	// Action was executed without issues.
+	Failure,	// Action could not be succesfully executed.
+	None		// Default State.
+};
+
+/*
 * Context for CorrbolgActions to provide information on what to execute an action on.
 */
 USTRUCT(BlueprintType)
-struct FActionContext
+struct FCorrbolgActionContext
 {
 	GENERATED_BODY()
 
@@ -36,6 +47,9 @@ public:
 
 	/** Additional data specific to the action, will be of a various types. */
 	FInstancedStruct Payload = FInstancedStruct();
+
+	/** Callback to execute when the action is finished. */
+	TFunction<void(ECorrbolgActionResult)> Callback;
 };
 
 /**
@@ -52,7 +66,7 @@ public:
 	TSoftClassPtr<UCorrbolgAction> ActionClass = TSoftClassPtr<UCorrbolgAction>();
 
 	/** Execute the action mapping to this mapping, if no instance exist ti will be created. */
-	void ExecuteAction(const FActionContext& Context);
+	void ExecuteAction(const FCorrbolgActionContext& Context);
 
 protected:
 	/** Instance of the action mapped to this context. */

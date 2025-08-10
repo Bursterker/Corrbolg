@@ -1,6 +1,6 @@
 #include "Actions/CorrbolgPrintDataToLog.h"
 
-void UCorrbolgPrintDataToLog::Execute_Server_Implementation(const FActionContext& ActionContext)
+void UCorrbolgPrintDataToLog::Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext)
 {
 	Super::Execute_Server_Implementation(ActionContext);
 

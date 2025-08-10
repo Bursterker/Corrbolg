@@ -16,7 +16,7 @@ class CORRBOLG_API UCorrbolgSaveDataOnClient : public UCorrbolgAction
 	GENERATED_BODY()
 	
 public:
-	virtual void Execute_Server_Implementation(const FActionContext& ActionContext) override;
+	virtual void Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext) override;
 
 protected:
 	/** Writes the inventory data to the save game. */

@@ -2,7 +2,7 @@
 
 #include "Actions/CorrbolgActionContextFragments.h"
 
-void UCorrbolgRetrieveItem::Execute_Server_Implementation(const FActionContext& ActionContext)
+void UCorrbolgRetrieveItem::Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext)
 {
 	Super::Execute_Server_Implementation(ActionContext);
 

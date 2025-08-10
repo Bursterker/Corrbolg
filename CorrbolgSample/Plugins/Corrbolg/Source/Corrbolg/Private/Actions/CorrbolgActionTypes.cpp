@@ -2,7 +2,7 @@
 
 #include "Actions/CorrbolgAction.h"
 
-void FCorrbolgActionMapping::ExecuteAction(const FActionContext& Context)
+void FCorrbolgActionMapping::ExecuteAction(const FCorrbolgActionContext& Context)
 {
 	if (!IsValid(ActionInstance))
 	{
