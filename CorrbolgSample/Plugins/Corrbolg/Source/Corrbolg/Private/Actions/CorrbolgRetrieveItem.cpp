@@ -2,11 +2,11 @@
 
 #include "Actions/CorrbolgActionContextFragments.h"
 
-void UCorrbolgRetrieveItem::Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext)
+ECorrbolgActionResult UCorrbolgRetrieveItem::PerformAction_Server(const FCorrbolgActionContext& ActionContext) const
 {
-	Super::Execute_Server_Implementation(ActionContext);
-
 	RetrieveItem_Server_Implementation();
+
+	return ECorrbolgActionResult::Success;
 }
 
 void UCorrbolgRetrieveItem::RetrieveItem_Server_Implementation() const

@@ -58,13 +58,6 @@ void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECor
 	Context.Callback = [this](const ECorrbolgActionResult Result){this->OnActionExecutionFinished(Result); };
 
 	ActionMapping->ExecuteAction(Context);
-
-	// TODO: Move to the OnActionExecutionFinished method.
-	if(Action != ECorrbolgAction::SaveData && Action != ECorrbolgAction::Log)
-	{
-		ExecuteAction_Server_Implementation(ECorrbolgAction::SaveData, Payload);
-		ExecuteAction_Server_Implementation(ECorrbolgAction::Log, Payload);
-	}
 }
 
 void UCorrbolgInventoryComponent::OnActionExecutionFinished(const ECorrbolgActionResult Result) const

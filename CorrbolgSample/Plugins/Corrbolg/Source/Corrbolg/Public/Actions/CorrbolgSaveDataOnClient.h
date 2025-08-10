@@ -5,6 +5,8 @@
 
 #include "CorrbolgSaveDataOnClient.generated.h"
 
+enum class ECorrbolgActionResult : uint8;
+
 struct FCorrbolgInventorySaveGameData;
 
 /**
@@ -15,10 +17,9 @@ class CORRBOLG_API UCorrbolgSaveDataOnClient : public UCorrbolgAction
 {
 	GENERATED_BODY()
 	
-public:
-	virtual void Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext) override;
-
 protected:
+	virtual ECorrbolgActionResult PerformAction_Server(const FCorrbolgActionContext& ActionContext) const override;
+
 	/** Writes the inventory data to the save game. */
 	UFUNCTION(Client, Reliable, Category = "Action|SaveData")
 	virtual void SaveInventory_Client(const FCorrbolgInventorySaveGameData& SaveGameData) const;

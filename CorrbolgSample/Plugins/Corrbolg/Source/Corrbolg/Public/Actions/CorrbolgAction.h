@@ -18,10 +18,10 @@ class CORRBOLG_API UCorrbolgAction : public UObject
 	GENERATED_BODY()
 	
 public:
-	/** Executes the defined behavior. */
+	/** Sets up the action and executes it. */
 	UFUNCTION(Server, Reliable, Category = "Action")
-	virtual void Execute_Server(const FCorrbolgActionContext& ActionContext);
-	virtual void Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext);
+	void Execute_Server(const FCorrbolgActionContext& ActionContext);
+	void Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext);
 
 	/** Delegate fired when the execution of the action has completed. */
 	FCorrbolgOnActionFinished OnActionFinished = FCorrbolgOnActionFinished();
@@ -32,4 +32,10 @@ protected:
 
 	/** Result of the action after being executed. */
 	ECorrbolgActionResult Result = ECorrbolgActionResult::None;
+
+	/** Setup required variables for access during execution. */
+	virtual void SetupAction_Server(const FCorrbolgActionContext& ActionContext);
+
+	/** Executes the defined behavior. */
+	virtual ECorrbolgActionResult PerformAction_Server(const FCorrbolgActionContext& ActionContext) const;
 };

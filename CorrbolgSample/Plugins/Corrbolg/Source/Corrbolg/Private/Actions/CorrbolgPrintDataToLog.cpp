@@ -1,9 +1,7 @@
 #include "Actions/CorrbolgPrintDataToLog.h"
 
-void UCorrbolgPrintDataToLog::Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext)
+ECorrbolgActionResult UCorrbolgPrintDataToLog::PerformAction_Server(const FCorrbolgActionContext& ActionContext) const
 {
-	Super::Execute_Server_Implementation(ActionContext);
-
 	FString StoredItemsString = "";
 
 	const TArray<FString> StoredItemsCopy = *Context.StoredItems;
@@ -14,4 +12,6 @@ void UCorrbolgPrintDataToLog::Execute_Server_Implementation(const FCorrbolgActio
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("Stored Items : %s"), *StoredItemsString);
+
+	return ECorrbolgActionResult::Success;
 }
