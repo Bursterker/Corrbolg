@@ -11,8 +11,11 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FCorrbolgOnActionFinished, const ECorrbolgAc
 
 /**
 * Base Interface to perform an action on the CorrbolgInventory.
+* Children are required to atleast implement the following:
+* - Broadcast OnActionFinished delegate
+* - Implement PerformAction_Server
 */
-UCLASS()
+UCLASS(Abstract)
 class CORRBOLG_API UCorrbolgAction : public UObject
 {
 	GENERATED_BODY()
@@ -30,12 +33,9 @@ protected:
 	/** The context the action was called for. */
 	FCorrbolgActionContext Context = FCorrbolgActionContext();
 
-	/** Result of the action after being executed. */
-	ECorrbolgActionResult Result = ECorrbolgActionResult::None;
-
 	/** Setup required variables for access during execution. */
-	virtual void SetupAction_Server(const FCorrbolgActionContext& ActionContext);
+	virtual void SetupAction(const FCorrbolgActionContext& ActionContext);
 
 	/** Executes the defined behavior. */
-	virtual ECorrbolgActionResult PerformAction_Server(const FCorrbolgActionContext& ActionContext) const;
+	virtual void PerformAction(const FCorrbolgActionContext& ActionContext) const PURE_VIRTUAL(UCorrbolgAction::PerformAction);
 };

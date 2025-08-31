@@ -2,11 +2,11 @@
 
 #include "Actions/CorrbolgActionContextFragments.h"
 
-ECorrbolgActionResult UCorrbolgStoreItem::PerformAction_Server(const FCorrbolgActionContext& ActionContext) const
+void UCorrbolgStoreItem::PerformAction(const FCorrbolgActionContext& ActionContext) const
 {
 	StoreItem_Server_Implementation();
 
-	return ECorrbolgActionResult::Success;
+	OnActionFinished.Broadcast(ECorrbolgActionResult::Success);
 }
 
 void UCorrbolgStoreItem::StoreItem_Server_Implementation() const

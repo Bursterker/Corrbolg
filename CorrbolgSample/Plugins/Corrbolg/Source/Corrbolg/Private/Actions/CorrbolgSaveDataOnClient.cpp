@@ -4,11 +4,11 @@
 
 #include "SaveGame/CorrbolgInventorySaveGame.h"
 
-ECorrbolgActionResult UCorrbolgSaveDataOnClient::PerformAction_Server(const FCorrbolgActionContext& ActionContext) const
+void UCorrbolgSaveDataOnClient::PerformAction(const FCorrbolgActionContext& ActionContext) const
 {
 	SaveInventory_Server_Implementation();
 
-	return ECorrbolgActionResult::Success;
+	OnActionFinished.Broadcast(ECorrbolgActionResult::Success);
 }
 
 void UCorrbolgSaveDataOnClient::SaveInventory_Client_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData) const

@@ -40,7 +40,7 @@ void UCorrbolgInventoryComponent::ExecuteAction_Client(const ECorrbolgAction& Ac
 void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECorrbolgAction& Action, const FInstancedStruct& Payload)
 {
 	// Verify the call is on the server/authorative client.
-	if (!IsAuthorative())
+	if (!IsAuthorative() || bIsHandlingAction)
 	{
 		return;
 	}
@@ -51,6 +51,8 @@ void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECor
 		return;
 	}
 
+	bIsHandlingAction = true;
+
 	FCorrbolgActionContext Context = FCorrbolgActionContext();
 	Context.Owner = this;
 	Context.StoredItems = &StoredItems;
@@ -60,8 +62,10 @@ void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const ECor
 	ActionMapping->ExecuteAction(Context);
 }
 
-void UCorrbolgInventoryComponent::OnActionExecutionFinished(const ECorrbolgActionResult Result) const
+void UCorrbolgInventoryComponent::OnActionExecutionFinished(const ECorrbolgActionResult Result)
 {
 	UE_LOG(LogTemp, Log, TEXT("Executed order 66 succesfully!"));
+
+	bIsHandlingAction = false;
 }
 #pragma endregion

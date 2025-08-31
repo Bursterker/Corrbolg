@@ -1,6 +1,6 @@
 #include "Actions/CorrbolgPrintDataToLog.h"
 
-ECorrbolgActionResult UCorrbolgPrintDataToLog::PerformAction_Server(const FCorrbolgActionContext& ActionContext) const
+void UCorrbolgPrintDataToLog::PerformAction(const FCorrbolgActionContext& ActionContext) const
 {
 	FString StoredItemsString = "";
 
@@ -12,6 +12,6 @@ ECorrbolgActionResult UCorrbolgPrintDataToLog::PerformAction_Server(const FCorrb
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("Stored Items : %s"), *StoredItemsString);
-
-	return ECorrbolgActionResult::Success;
+	
+	OnActionFinished.Broadcast(ECorrbolgActionResult::Success);
 }

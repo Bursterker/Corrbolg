@@ -57,6 +57,8 @@ protected:
 
 	/** Callback from when any action has finished. */
 	UFUNCTION()
-	virtual void OnActionExecutionFinished(const ECorrbolgActionResult Result) const;
+	virtual void OnActionExecutionFinished(const ECorrbolgActionResult Result);
+
+	bool bIsHandlingAction = false;
 #pragma endregion
 };

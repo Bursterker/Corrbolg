@@ -4,11 +4,9 @@
 
 #include "SaveGame/CorrbolgInventorySaveGame.h"
 
-ECorrbolgActionResult UCorrbolgLoadDataFromClient::PerformAction_Server(const FCorrbolgActionContext& ActionContext) const
+void UCorrbolgLoadDataFromClient::PerformAction(const FCorrbolgActionContext& ActionContext) const
 {
 	LoadInventory_Server();
-
-	return ECorrbolgActionResult::Success;
 }
 
 void UCorrbolgLoadDataFromClient::LoadInventory_Client_Implementation() const
@@ -17,12 +15,14 @@ void UCorrbolgLoadDataFromClient::LoadInventory_Client_Implementation() const
 		Cast<UCorrbolgInventorySaveGame>(
 			UGameplayStatics::LoadGameFromSlot(CorrbolgSaveGame::SaveSlotName, CorrbolgSaveGame::SaveUserIndex));
 
+	FCorrbolgInventorySaveGameData SaveGameData = FCorrbolgInventorySaveGameData();
+
 	if (!IsValid(SaveGameInstance))
 	{
+		OnSaveDataReceived_Server(SaveGameData);
 		return;
 	}
 
-	FCorrbolgInventorySaveGameData SaveGameData = FCorrbolgInventorySaveGameData();
 	SaveGameData.SavedStoredItems = SaveGameInstance->SavedStoredItems;
 
 	OnSaveDataReceived_Server(SaveGameData);
@@ -35,5 +35,8 @@ void UCorrbolgLoadDataFromClient::LoadInventory_Server_Implementation() const
 
 void UCorrbolgLoadDataFromClient::OnSaveDataReceived_Server_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData) const
 {
+	// TODO: broadcast failure if there was no savegame instance in LoadInventory_Client.
 	*Context.StoredItems = SaveGameData.SavedStoredItems;
+
+	OnActionFinished.Broadcast(ECorrbolgActionResult::Success);
 }
