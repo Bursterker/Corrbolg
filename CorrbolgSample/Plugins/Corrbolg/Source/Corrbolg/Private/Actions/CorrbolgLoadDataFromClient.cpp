@@ -35,7 +35,6 @@ void UCorrbolgLoadDataFromClient::LoadInventory_Server_Implementation() const
 
 void UCorrbolgLoadDataFromClient::OnSaveDataReceived_Server_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData) const
 {
-	// TODO: broadcast failure if there was no savegame instance in LoadInventory_Client.
 	*Context.StoredItems = SaveGameData.SavedStoredItems;
 
 	OnActionFinished.Broadcast(ECorrbolgActionResult::Success);
