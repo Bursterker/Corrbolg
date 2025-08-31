@@ -23,7 +23,7 @@ void UCorrbolgLoadDataFromClient::LoadInventory_Client_Implementation() const
 		return;
 	}
 
-	SaveGameData.SavedStoredItems = SaveGameInstance->SavedStoredItems;
+	SaveGameData.SavedStoredItems = SaveGameInstance->SaveGameData.SavedStoredItems;
 
 	OnSaveDataReceived_Server(SaveGameData);
 }

@@ -15,26 +15,7 @@ namespace CorrbolgSaveGame
 }
 
 /**
-* SaveGame data for the inventory.
-* Keep in sync with FCorrbolgInventorySaveGameData.
-*/
-UCLASS(ClassGroup = (Corrbolg))
-class CORRBOLG_API UCorrbolgInventorySaveGame : public USaveGame
-{
-	GENERATED_BODY()
-
-public:
-	// Sets default values for this SaveGame's properties
-	UCorrbolgInventorySaveGame();
-
-	/** Items saved in the inventory. */
-	UPROPERTY(VisibleAnywhere, Category = "SaveData")
-	TArray<FString> SavedStoredItems = TArray<FString>();
-};
-
-/**
 * Save game data to send over the network.
-* Keep in sync with UCorrbolgInventorySaveGame.
 */
 USTRUCT(BlueprintType)
 struct FCorrbolgInventorySaveGameData
@@ -47,3 +28,21 @@ struct FCorrbolgInventorySaveGameData
 	UPROPERTY()
 	TArray<FString> SavedStoredItems = TArray<FString>();
 };
+
+/**
+* SaveGame data for the inventory.
+*/
+UCLASS(ClassGroup = (Corrbolg))
+class CORRBOLG_API UCorrbolgInventorySaveGame : public USaveGame
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this SaveGame's properties
+	UCorrbolgInventorySaveGame();
+
+	/** Data that is saved for the inventory. */
+	UPROPERTY(VisibleAnywhere, Category = "SaveData")
+	FCorrbolgInventorySaveGameData SaveGameData = FCorrbolgInventorySaveGameData();
+};
+

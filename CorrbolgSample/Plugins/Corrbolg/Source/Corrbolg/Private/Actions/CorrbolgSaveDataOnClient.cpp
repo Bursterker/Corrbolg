@@ -17,7 +17,7 @@ void UCorrbolgSaveDataOnClient::SaveInventory_Client_Implementation(const FCorrb
 		Cast<UCorrbolgInventorySaveGame>(
 			UGameplayStatics::CreateSaveGameObject(UCorrbolgInventorySaveGame::StaticClass()));
 
-	SaveGameInstance->SavedStoredItems = SaveGameData.SavedStoredItems;
+	SaveGameInstance->SaveGameData.SavedStoredItems = SaveGameData.SavedStoredItems;
 
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, CorrbolgSaveGame::SaveSlotName, CorrbolgSaveGame::SaveUserIndex);
 }
