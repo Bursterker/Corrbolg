@@ -20,7 +20,7 @@ void UCorrbolgInventoryComponent::BeginPlay()
 
 	if (IsAuthorative())
 	{
-		ExecuteAction_Server_Implementation(ECorrbolgAction::LoadData);
+		InitializeActions();
 	}
 }
 
