@@ -2,11 +2,14 @@
 
 #include "Corrbolg.h"
 
+#include "GameplayTagsManager.h"
+
 #define LOCTEXT_NAMESPACE "FCorrbolgModule"
 
 void FCorrbolgModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+	UGameplayTagsManager::Get().AddTagIniSearchPath(FPaths::ProjectPluginsDir() / TEXT("Corrbolg/Config/Tags"));
 }
 
 void FCorrbolgModule::ShutdownModule()
