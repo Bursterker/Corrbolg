@@ -17,6 +17,23 @@ namespace CorrbolgSaveGame
 }
 
 /**
+* Save game data of an inventory entry.
+*/
+USTRUCT(BlueprintType)
+struct FCorrbolgInventoryEntrySaveGameData
+{
+	GENERATED_BODY()
+
+	/** The ID of the object represented in the entry to save. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FGuid ObjectId = FGuid();
+
+	/** Amount of instances stored in the entry to save. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient)
+	int32 StackSize = 0;
+};
+
+/**
 * Save game data to send over the network.
 */
 USTRUCT(BlueprintType)
@@ -28,7 +45,7 @@ struct FCorrbolgInventorySaveGameData
 
 	/** Entries saved in the inventory. */
 	UPROPERTY()
-	TArray<FCorrbolgInventoryEntry> SavedInventoryEntries = TArray<FCorrbolgInventoryEntry>();
+	TArray<FCorrbolgInventoryEntrySaveGameData> SavedInventoryEntries = TArray<FCorrbolgInventoryEntrySaveGameData>();
 };
 
 /**

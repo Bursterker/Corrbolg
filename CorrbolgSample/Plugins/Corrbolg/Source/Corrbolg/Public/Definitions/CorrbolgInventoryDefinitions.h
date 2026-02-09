@@ -23,6 +23,7 @@ public:
 
 	const FGuid& GetObjectId() const { return ObjectId; };
 	const FPrimaryAssetId& GetAssetId() const { return PrimaryAssetId; };
+	const int32 GetStackSize() const { return StackSize; };
 
 protected:
 	/**

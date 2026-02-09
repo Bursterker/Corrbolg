@@ -35,8 +35,14 @@ void UCorrbolgLoadDataFromClient::LoadInventory_Server_Implementation() const
 
 void UCorrbolgLoadDataFromClient::OnSaveDataReceived_Server_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData) const
 {
-	// TODO: Koen: The Primary Asset Id's should not be saved, so restore them by looking up the PrimaryAssetId's based on the ObjectId.
-	*Context.Inventory = SaveGameData.SavedInventoryEntries;
+	for (const FCorrbolgInventoryEntrySaveGameData& SavedEntry : SaveGameData.SavedInventoryEntries)
+	{
+		// TODO: Koen: Lookup the Asset ID based on the ObjectId.
+		FPrimaryAssetId AssetId;
+
+		FCorrbolgInventoryEntry Entry = FCorrbolgInventoryEntry(SavedEntry.ObjectId, AssetId,SavedEntry.StackSize);
+		Context.Inventory->Add(Entry);
+	}
 
 	OnActionFinished.Broadcast(ECorrbolgActionResult::Success);
 }

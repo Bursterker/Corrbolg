@@ -17,7 +17,6 @@ void UCorrbolgSaveDataOnClient::SaveInventory_Client_Implementation(const FCorrb
 		Cast<UCorrbolgInventorySaveGame>(
 			UGameplayStatics::CreateSaveGameObject(UCorrbolgInventorySaveGame::StaticClass()));
 
-	// TODO: Koen: Don't save the PRimary Asset Id, it needs to be reinitialized for safety between updates as the primary asset id can ahve changed with refactors.
 	SaveGameInstance->SaveGameData.SavedInventoryEntries = SaveGameData.SavedInventoryEntries;
 
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, CorrbolgSaveGame::SaveSlotName, CorrbolgSaveGame::SaveUserIndex);
@@ -26,7 +25,15 @@ void UCorrbolgSaveDataOnClient::SaveInventory_Client_Implementation(const FCorrb
 void UCorrbolgSaveDataOnClient::SaveInventory_Server_Implementation() const
 {
 	FCorrbolgInventorySaveGameData SaveData = FCorrbolgInventorySaveGameData();
-	SaveData.SavedInventoryEntries = *Context.Inventory;
+
+	for (const FCorrbolgInventoryEntry& Entry : *Context.Inventory)
+	{
+		FCorrbolgInventoryEntrySaveGameData SavedEntry = FCorrbolgInventoryEntrySaveGameData();
+		SavedEntry.ObjectId = Entry.GetObjectId();
+		SavedEntry.StackSize = Entry.GetStackSize();
+
+		SaveData.SavedInventoryEntries.Add(SavedEntry);
+	}
 
 	SaveInventory_Client(SaveData);
 }
