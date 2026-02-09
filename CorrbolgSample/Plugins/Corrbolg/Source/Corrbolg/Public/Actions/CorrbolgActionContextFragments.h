@@ -1,6 +1,8 @@
 #pragma once
 #include "CoreMinimal.h"
 
+#include "Definitions/CorrbolgItemDefinition.h"
+
 #include "CorrbolgActionContextFragments.generated.h"
 
 /** Base type for context fragments. Used to filter available structs in editor dropdowns. */
@@ -22,5 +24,9 @@ struct FCorrbolgStorageContextFragment : public FCorrbolgActionContextFragment
 public:
 	/** The item to handle with the action. */
 	UPROPERTY(BlueprintReadWrite)
-	FString Item = "";
+	TObjectPtr<UCorrbolgItemDefinition> Item = nullptr;
+
+	/** The amount to store/retrieve*/
+	UPROPERTY(BlueprintReadWrite)
+	int StackSize = 0;
 };

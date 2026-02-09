@@ -29,7 +29,7 @@ void UCorrbolgInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePro
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UCorrbolgInventoryComponent, StoredItems);
+	DOREPLIFETIME(UCorrbolgInventoryComponent, StoredEntries);
 }
 
 bool UCorrbolgInventoryComponent::IsAuthorative() const
@@ -60,7 +60,7 @@ void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const FGam
 
 	FCorrbolgActionContext Context = FCorrbolgActionContext();
 	Context.Owner = this;
-	Context.StoredItems = &StoredItems;
+	Context.Inventory = &StoredEntries;
 	Context.Payload = Payload;
 	Context.Callback = [this](const ECorrbolgActionResult Result){this->OnActionExecutionFinished(Result); };
 

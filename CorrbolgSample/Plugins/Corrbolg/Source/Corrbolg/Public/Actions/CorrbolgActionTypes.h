@@ -2,6 +2,8 @@
 #include "CoreMinimal.h"
 #include "StructUtils/InstancedStruct.h"
 
+#include "Definitions/CorrbolgInventoryDefinitions.h"
+
 #include "CorrbolgActionTypes.generated.h"
 
 /*
@@ -28,7 +30,7 @@ public:
 	UActorComponent* Owner = nullptr;
 
 	/** The inventory to execute an action on. */
-	TArray<FString>* StoredItems = nullptr;
+	TArray<FCorrbolgInventoryEntry>* Inventory = nullptr;
 
 	/** Additional data specific to the action, will be of a various types. */
 	FInstancedStruct Payload = FInstancedStruct();

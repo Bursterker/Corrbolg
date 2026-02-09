@@ -5,6 +5,8 @@
 #include "StructUtils/InstancedStruct.h"
 #include "GameplayTagContainer.h"
 
+#include "Definitions/CorrbolgInventoryDefinitions.h"
+
 #include "CorrbolgInventoryComponent.generated.h"
 
 enum class ECorrbolgActionResult : uint8;
@@ -27,7 +29,7 @@ public:
 protected:
 	/** Container holding all items stored in the inventory.*/
 	UPROPERTY(Replicated)
-	TArray<FString> StoredItems = TArray<FString>();
+	TArray<FCorrbolgInventoryEntry> StoredEntries = TArray<FCorrbolgInventoryEntry>();
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UCorrbolgInventorySettings> InventorySettings = nullptr;

@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 
+#include "Definitions/CorrbolgInventoryDefinitions.h"
+
 #include "CorrbolgInventorySaveGame.generated.h"
 
 namespace CorrbolgSaveGame
@@ -24,9 +26,9 @@ struct FCorrbolgInventorySaveGameData
 
 	FCorrbolgInventorySaveGameData();
 
-	/** Items saved in the inventory. */
+	/** Entries saved in the inventory. */
 	UPROPERTY()
-	TArray<FString> SavedStoredItems = TArray<FString>();
+	TArray<FCorrbolgInventoryEntry> SavedInventoryEntries = TArray<FCorrbolgInventoryEntry>();
 };
 
 /**
