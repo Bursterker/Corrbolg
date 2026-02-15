@@ -23,7 +23,7 @@
 		{
 			"Name": "CorrbolgEditor",
 			"Type": "Editor",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PostEngineInit"
 		}
 	]
 }
