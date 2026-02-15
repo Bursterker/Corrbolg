@@ -12,14 +12,14 @@ public class CorrbolgEditor : ModuleRules
 			new string[] {
 				// ... add public include paths required here ...
 			}
-			);
+		);
 				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
 			}
-			);
+		);
 			
 		
 		PublicDependencyModuleNames.AddRange(
@@ -27,7 +27,7 @@ public class CorrbolgEditor : ModuleRules
 			{
 				// ... add other public dependencies that you statically link with here ...
 			}
-			);
+		);
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -35,15 +35,15 @@ public class CorrbolgEditor : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
+				"DataTableEditor",
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"ToolMenus",
-				"DataTableEditor",
+				"UnrealEd",
 				// ... add private dependencies that you statically link with here ...
 				"Corrbolg",
 			}
-			);
+		);
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(
@@ -51,6 +51,6 @@ public class CorrbolgEditor : ModuleRules
 			{
 				// ... add any modules that your module loads dynamically here ...
 			}
-			);
+		);
 	}
 }

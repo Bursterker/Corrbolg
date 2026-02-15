@@ -2,72 +2,53 @@
 
 #include "CorrbolgEditor.h"
 
-#pragma region Extender includes
-#include "Framework/MultiBox/MultiBoxBuilder.h"
-#include "Framework/Commands/UIAction.h"
-#include "Modules/ModuleManager.h"
-#include "DataTableEditorModule.h"
-#include <Toolkits/AssetEditorToolkit.h>
-#include <Framework/MultiBox/MultiBoxExtender.h>
-#include <Templates/SharedPointer.h>
-#include <Textures/SlateIcon.h>
-#include <Styling/AppStyle.h>
-#pragma endregion
+#include "AssetToolsModule.h"
+#include "IAssetTools.h"
+
+#include "CorrbolgDataTableAssetTypeActions.h"
 
 #define LOCTEXT_NAMESPACE "FCorrbolgEditorModule"
 
 void FCorrbolgEditorModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	ExtendDataTableRowEditor();
+	RegisterAssetTypeActions();
 }
 
 void FCorrbolgEditorModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
+	UnregisterAssetTypeActions();
 }
 
-void FCorrbolgEditorModule::ExtendDataTableRowEditor() const
+void FCorrbolgEditorModule::RegisterAssetTypeActions()
 {
-	FDataTableEditorModule& DataTableEditorModule = FModuleManager::LoadModuleChecked<FDataTableEditorModule>("DataTableEditor");
+	IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 
-	TSharedPtr<FExtensibilityManager> ToolbarExtender = DataTableEditorModule.GetToolBarExtensibilityManager();
-	ToolbarExtender->AddExtender(CreateDataTableToolbarExtender());
+	// Create and register our DataTable asset type actions
+	TSharedRef<FCorrbolgAssetTypeActions_DataTable> DataTableActions =
+		MakeShareable(new FCorrbolgAssetTypeActions_DataTable(
+			AssetTools.RegisterAdvancedAssetCategory(FName("Corrbolg"), LOCTEXT("CorrbolgCategory", "Corrbolg"))
+		));
+
+	RegisteredAssetTypeActions.Add(DataTableActions);
+	AssetTools.RegisterAssetTypeActions(DataTableActions);
 }
 
-TSharedRef<FExtender> FCorrbolgEditorModule::CreateDataTableToolbarExtender() const
+void FCorrbolgEditorModule::UnregisterAssetTypeActions()
 {
-	TSharedRef<FExtender> Extender = MakeShared<FExtender>();
-
-	Extender->AddToolBarExtension(
-		"Asset",
-		EExtensionHook::After,
-		nullptr,
-		FToolBarExtensionDelegate::CreateRaw(this, &FCorrbolgEditorModule::FillToolbar)
-	);
-
-	return Extender;
-}
-
-void FCorrbolgEditorModule::FillToolbar(FToolBarBuilder& ToolbarBuilder) const
-{
-	ToolbarBuilder.BeginSection("CorrbolgCommands");
+	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
 	{
-		ToolbarBuilder.AddToolBarButton(
-			FUIAction(FExecuteAction::CreateRaw(this, &FCorrbolgEditorModule::OnFillRowIdClicked)),
-			NAME_None,
-			LOCTEXT("FillText", "Fill"),
-			LOCTEXT("FillTooltip", "Fill this DataTable Ids"),
-			FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Details"));
+		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();
 
+		for (TSharedRef<IAssetTypeActions> RegisteredAction : RegisteredAssetTypeActions)
+		{
+			AssetTools.UnregisterAssetTypeActions(RegisteredAction);
+		}
 	}
-	ToolbarBuilder.EndSection();
-}
 
-void FCorrbolgEditorModule::OnFillRowIdClicked() const
-{
-	UE_LOG(LogTemp, Warning, TEXT("OnFillRowIdClicked toolbar button clicked"));
+	RegisteredAssetTypeActions.Empty();
 }
 
 #undef LOCTEXT_NAMESPACE

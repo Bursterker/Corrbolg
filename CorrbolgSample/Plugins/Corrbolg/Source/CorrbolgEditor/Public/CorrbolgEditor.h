@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Modules/ModuleManager.h"
+#include "AssetTypeActions_Base.h"
 
 class FCorrbolgEditorModule : public IModuleInterface
 {
@@ -13,9 +14,12 @@ public:
 	virtual void ShutdownModule() override;
 
 private:
-	// TODO: Koen: Move this to another file as a static method, so that we don't have monolithic includes.
-	void ExtendDataTableRowEditor() const;
-	TSharedRef<FExtender> CreateDataTableToolbarExtender() const;
-	void FillToolbar(FToolBarBuilder& ToolbarBuilder) const;
-	void OnFillRowIdClicked() const;
+	/** Registers asset type actions with the asset tools module */
+	void RegisterAssetTypeActions();
+
+	/** Unregisters asset type actions */
+	void UnregisterAssetTypeActions();
+
+	/** Array of registered asset type actions */
+	TArray<TSharedRef<IAssetTypeActions>> RegisteredAssetTypeActions;
 };
