@@ -25,6 +25,18 @@ void UCorrbolgItemDefinition::PostInitProperties()
 }
 
 #if WITH_EDITOR 
+void UCorrbolgItemDefinition::PostDuplicate(bool bDuplicateForPIE)
+{
+	Super::PostDuplicate(bDuplicateForPIE);
+
+	if (!bDuplicateForPIE)
+	{
+		// Generate a new GUID for the duplicated asset.
+		ItemId = FGuid::NewGuid();
+		UE_LOG(LogTemp, Log, TEXT("ItemDefinition '%s' duplicated. New GUID '%s' generated."), *GetName(), *ItemId.ToString());
+	}
+}
+
 bool UCorrbolgItemDefinition::CanEditChange(const FProperty* InProperty) const
 {
 	// Prevent scripts from editing the GUID.

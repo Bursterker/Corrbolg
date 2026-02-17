@@ -2,6 +2,7 @@
 
 #include "CorrbolgDataTableExtension.h"
 
+#include "DataTableEditorUtils.h"
 #include "Editor.h"
 #include "Engine/DataTable.h"
 #include "Framework/Commands/UIAction.h"
@@ -11,6 +12,8 @@
 #include "Styling/AppStyle.h"
 #include "Subsystems/AssetEditorSubsystem.h"
 #include "Textures/SlateIcon.h"
+
+#include "Definitions/CorrbolgItemTableRow.h"
 
 #define LOCTEXT_NAMESPACE "FCorrbolgDataTableExtension"
 
@@ -74,7 +77,10 @@ void FCorrbolgDataTableExtension::OnAssetEditorOpened(UObject* const Asset, IAss
 		return;
 	}
 
-	// TODO: Koen: Only extend if the asset has a compatible row struct.
+	if(DataTable->RowStruct != FCorrbolgItemTableRow::StaticStruct())
+	{
+		return;
+	}
 
 	IDataTableEditor* const DataTableEditor = static_cast<IDataTableEditor*>(EditorInstance);
 	if (!DataTableEditor)
@@ -128,7 +134,33 @@ void FCorrbolgDataTableExtension::FillDataTableRowIds(TWeakObjectPtr<UDataTable>
 {
 	if (UDataTable* const Table = DataTableWeak.Get())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Fill Row IDs clicked for DataTable: %s"), *Table->GetPathName());
+		UE_LOG(LogTemp, Log, TEXT("Fill Row IDs clicked for DataTable: %s"), *Table->GetPathName());
+
+		const TMap<FName, uint8*>& RowMap = Table->GetRowMap();
+		for (auto& RowEntry : RowMap)
+		{
+			const FCorrbolgItemTableRow* const EntryValue = (const FCorrbolgItemTableRow*)RowEntry.Value;
+			if(!EntryValue)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Fill Row IDs: Row %s has null value"), *RowEntry.Key.ToString());
+				continue;
+			}
+
+			const UCorrbolgItemDefinition* const ItemDefinition = EntryValue->ItemDefinition.LoadSynchronous();
+			if (!IsValid(ItemDefinition))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Fill Row IDs: Row %s has null ItemDefinition"), *RowEntry.Key.ToString());
+				continue;
+			}
+
+			const FName NewName = *ItemDefinition->GetId().ToString();
+			const bool bIsRenamed = FDataTableEditorUtils::RenameRow(Table, RowEntry.Key, NewName);
+
+			if (!bIsRenamed)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Fill Row IDs: Failed to rename row %s to %s"), *RowEntry.Key.ToString(), *NewName.ToString());
+			}
+		}
 	}
 	else
 	{

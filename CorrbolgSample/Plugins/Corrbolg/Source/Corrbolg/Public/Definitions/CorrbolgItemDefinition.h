@@ -19,7 +19,8 @@ class CORRBOLG_API UCorrbolgItemDefinition : public UPrimaryDataAsset
 public:
 	virtual void PostInitProperties() override;
 
-#if WITH_EDITOR 
+#if WITH_EDITOR
+	virtual void PostDuplicate(bool bDuplicateForPIE) override;
 	virtual bool CanEditChange(const FProperty* InProperty) const override;
 #endif
 
