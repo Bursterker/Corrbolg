@@ -36,6 +36,7 @@ public class CorrbolgEditor : ModuleRules
 				"Core",
 				"CoreUObject",
 				"DataTableEditor",
+				"DeveloperSettings",
 				"Engine",
 				"Slate",
 				"SlateCore",

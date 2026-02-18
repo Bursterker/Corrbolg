@@ -37,6 +37,8 @@ private:
 	/** Fills in the Row Id's with the assigned asset item ID. */
 	static void FillDataTableRowIds(TWeakObjectPtr<UDataTable> DataTableWeak);
 
+	static const ICorrbolgAutoFillRowIdInterface* const FindAutoFillRuleForDataTable(const UDataTable* const DataTable);
+
 	/** Handle to the OnAssetOpenedInEditor delegate */
 	FDelegateHandle AssetOpenedDelegateHandle;
 };

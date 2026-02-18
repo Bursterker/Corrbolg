@@ -13,7 +13,8 @@
 #include "Subsystems/AssetEditorSubsystem.h"
 #include "Textures/SlateIcon.h"
 
-#include "Definitions/CorrbolgItemTableRow.h"
+#include "CorrbolgEditorSettings.h"
+#include "CorrbolgAutoFillRowIdInterface.h"
 
 #define LOCTEXT_NAMESPACE "FCorrbolgDataTableExtension"
 
@@ -77,7 +78,8 @@ void FCorrbolgDataTableExtension::OnAssetEditorOpened(UObject* const Asset, IAss
 		return;
 	}
 
-	if(DataTable->RowStruct != FCorrbolgItemTableRow::StaticStruct())
+	const ICorrbolgAutoFillRowIdInterface* const FillRule = FindAutoFillRuleForDataTable(DataTable);
+	if(!FillRule)
 	{
 		return;
 	}
@@ -139,21 +141,22 @@ void FCorrbolgDataTableExtension::FillDataTableRowIds(TWeakObjectPtr<UDataTable>
 		const TMap<FName, uint8*>& RowMap = Table->GetRowMap();
 		for (auto& RowEntry : RowMap)
 		{
-			const FCorrbolgItemTableRow* const EntryValue = (const FCorrbolgItemTableRow*)RowEntry.Value;
+			const FTableRowBase* const EntryValue = (const FTableRowBase*)RowEntry.Value;
 			if(!EntryValue)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Fill Row IDs: Row %s has null value"), *RowEntry.Key.ToString());
 				continue;
 			}
 
-			const UCorrbolgItemDefinition* const ItemDefinition = EntryValue->ItemDefinition.LoadSynchronous();
-			if (!IsValid(ItemDefinition))
+			const ICorrbolgAutoFillRowIdInterface* const FillRule = FindAutoFillRuleForDataTable(Table);
+			const FName NewName = FillRule->GetRowId(EntryValue);
+
+			if (NewName.IsNone())
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Fill Row IDs: Row %s has null ItemDefinition"), *RowEntry.Key.ToString());
+				UE_LOG(LogTemp, Warning, TEXT("Fill Row IDs: Fill rule returned None for row %s, skipping"), *RowEntry.Key.ToString());
 				continue;
 			}
 
-			const FName NewName = *ItemDefinition->GetId().ToString();
 			const bool bIsRenamed = FDataTableEditorUtils::RenameRow(Table, RowEntry.Key, NewName);
 
 			if (!bIsRenamed)
@@ -166,6 +169,37 @@ void FCorrbolgDataTableExtension::FillDataTableRowIds(TWeakObjectPtr<UDataTable>
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Fill Row IDs: DataTable is no longer valid"));
 	}
+}
+
+const ICorrbolgAutoFillRowIdInterface* const FCorrbolgDataTableExtension::FindAutoFillRuleForDataTable(const UDataTable* const DataTable)
+{
+	const UScriptStruct* const StructType = DataTable->GetRowStruct();
+
+	const UCorrbolgEditorSettings* const EditorSettings = GetDefault<UCorrbolgEditorSettings>();
+	if (!IsValid(EditorSettings))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get UCorrbolgEditorSettings"));
+		return nullptr;
+	}
+
+	const TSubclassOf<UObject>* RuleClass = nullptr;
+	for (const FAutoFillRowIdRuleDefinition& RuleDefinition : EditorSettings->AutoFillRowIdRuleDefinitions)
+	{
+		if (RuleDefinition.RowType == StructType)
+		{
+			RuleClass = &RuleDefinition.Rule;
+			break;
+		}
+	}
+
+	if (!RuleClass)
+	{
+		return nullptr; // Auto Fill row is not defined (User Error or not needed for this table)
+	}
+
+	const ICorrbolgAutoFillRowIdInterface* const Interface = Cast<ICorrbolgAutoFillRowIdInterface>(RuleClass->GetDefaultObject());
+
+	return Interface;
 }
 
 #undef LOCTEXT_NAMESPACE
