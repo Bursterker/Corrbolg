@@ -185,7 +185,7 @@ const ICorrbolgAutoFillRowIdInterface* const FCorrbolgDataTableExtension::FindAu
 	const TSubclassOf<UObject>* RuleClass = nullptr;
 	for (const FAutoFillRowIdRuleDefinition& RuleDefinition : EditorSettings->AutoFillRowIdRuleDefinitions)
 	{
-		if (RuleDefinition.RowType == StructType)
+		if (StructType->IsChildOf(RuleDefinition.RowType.LoadSynchronous()))
 		{
 			RuleClass = &RuleDefinition.Rule;
 			break;
