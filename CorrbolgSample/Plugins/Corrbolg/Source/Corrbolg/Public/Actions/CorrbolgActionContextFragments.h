@@ -1,7 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 
-#include "Definitions/CorrbolgItemDefinition.h"
+#include "Items/Definitions/CorrbolgItemDefinition.h"
 
 #include "CorrbolgActionContextFragments.generated.h"
 

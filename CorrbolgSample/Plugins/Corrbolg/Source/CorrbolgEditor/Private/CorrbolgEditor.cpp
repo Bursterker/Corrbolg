@@ -2,7 +2,7 @@
 
 #include "CorrbolgEditor.h"
 
-#include "CorrbolgDataTableExtension.h"
+#include "Items/CorrbolgDataTableExtension.h"
 
 #define LOCTEXT_NAMESPACE "FCorrbolgEditorModule"
 

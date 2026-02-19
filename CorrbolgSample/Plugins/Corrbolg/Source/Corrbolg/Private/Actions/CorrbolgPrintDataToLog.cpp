@@ -2,9 +2,9 @@
 
 #include "Engine/AssetManager.h"
 
-#include "Definitions/CorrbolgInventoryDefinitions.h"
-#include "Definitions/CorrbolgItemDefinition.h"
-#include "Definitions/Fragments/CorrbolgUIFragment.h"
+#include "Items/Definitions/CorrbolgInventoryDefinitions.h"
+#include "Items/Definitions/CorrbolgItemDefinition.h"
+#include "Items/Definitions/Fragments/CorrbolgUIFragment.h"
 
 void UCorrbolgPrintDataToLog::PerformAction(const FCorrbolgActionContext& ActionContext) const
 {

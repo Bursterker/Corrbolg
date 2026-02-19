@@ -2,7 +2,7 @@
 
 #include "Kismet/GameplayStatics.h"
 
-#include "SaveGame/CorrbolgInventorySaveGame.h"
+#include "Inventory/SaveGame/CorrbolgInventorySaveGame.h"
 
 void UCorrbolgSaveDataOnClient::PerformAction(const FCorrbolgActionContext& ActionContext) const
 {

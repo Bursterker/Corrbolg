@@ -1,6 +1,6 @@
 #include "Actions/CorrbolgStoreItem.h"
 
-#include "Definitions/Fragments/CorrbolgInventoryFragment.h"
+#include "Items/Definitions/Fragments/CorrbolgInventoryFragment.h"
 
 #include "Actions/CorrbolgActionContextFragments.h"
 
