@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "StructUtils/InstancedStruct.h"
 
-#include "Items/Definitions/CorrbolgInventoryDefinitions.h"
+#include "Inventory/Definitions/CorrbolgInventoryDefinitions.h"
 
 #include "CorrbolgActionTypes.generated.h"
 

@@ -2,7 +2,7 @@
 
 #include "Engine/AssetManager.h"
 
-#include "Items/Definitions/CorrbolgInventoryDefinitions.h"
+#include "Inventory/Definitions/CorrbolgInventoryDefinitions.h"
 #include "Items/Definitions/CorrbolgItemDefinition.h"
 #include "Items/Definitions/Fragments/CorrbolgUIFragment.h"
 

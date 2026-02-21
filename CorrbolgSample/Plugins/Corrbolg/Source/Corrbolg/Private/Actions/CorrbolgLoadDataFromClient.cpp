@@ -3,6 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Inventory/SaveGame/CorrbolgInventorySaveGame.h"
+#include "Inventory/Definitions/CorrbolgInventoryDefinitions.h"
 
 void UCorrbolgLoadDataFromClient::PerformAction(const FCorrbolgActionContext& ActionContext) const
 {
