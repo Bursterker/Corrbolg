@@ -30,3 +30,17 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int StackSize = 0;
 };
+
+/**
+* Contains context data for savegame related actions: Save/Load.
+*/
+USTRUCT(BlueprintType)
+struct FCorrbolgSaveGameContextFragment : public FCorrbolgActionContextFragment
+{
+	GENERATED_BODY()
+
+public:
+	/** The database containing item definitions. */
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UDataTable> ItemTable = nullptr;
+};
