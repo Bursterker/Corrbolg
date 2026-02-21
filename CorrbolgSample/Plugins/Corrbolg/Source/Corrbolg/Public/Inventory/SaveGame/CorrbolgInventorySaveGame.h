@@ -3,8 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 
-#include "Items/Definitions/CorrbolgInventoryDefinitions.h"
-
 #include "CorrbolgInventorySaveGame.generated.h"
 
 namespace CorrbolgSaveGame

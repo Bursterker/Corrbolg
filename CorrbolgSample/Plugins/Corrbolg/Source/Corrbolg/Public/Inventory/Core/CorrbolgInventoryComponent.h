@@ -5,7 +5,7 @@
 #include "StructUtils/InstancedStruct.h"
 #include "GameplayTagContainer.h"
 
-#include "Items/Definitions/CorrbolgInventoryDefinitions.h"
+#include "Inventory/Definitions/CorrbolgInventoryDefinitions.h"
 
 #include "CorrbolgInventoryComponent.generated.h"
 

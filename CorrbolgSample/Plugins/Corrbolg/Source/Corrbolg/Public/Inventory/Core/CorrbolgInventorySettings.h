@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "GameplayTags.h"
+#include "GameplayTagContainer.h"
 
-#include "Actions/CorrbolgActionTypes.h"
 #include "Actions/CorrbolgAction.h"
 
 #include "CorrbolgInventorySettings.generated.h"
