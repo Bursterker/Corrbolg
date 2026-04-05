@@ -8,12 +8,21 @@ void UCorrbolgAction::Execute_Server_Implementation(const FCorrbolgActionContext
 	// Execute the action and notify listeners.
 	PerformAction(ActionContext);
 
+	if (!bIsAsyncAction)
+	{
+		FinishAction(ECorrbolgActionResult::Success);
+	}
 }
 
 void UCorrbolgAction::SetupAction(const FCorrbolgActionContext& ActionContext)
 {
 	Context = ActionContext;
 
-	// TODO: If each action remains instanced, then the callback needs to be removed. Otherwise a callback is added each time the setup is called and will be executed multiple times.
 	OnActionFinished.AddLambda(ActionContext.Callback);
+}
+
+void UCorrbolgAction::FinishAction(const ECorrbolgActionResult Result)
+{
+	OnActionFinished.Broadcast(Result);
+	OnActionFinished.Clear();
 }

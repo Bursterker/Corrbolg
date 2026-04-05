@@ -2,20 +2,29 @@
 
 #include "Engine/AssetManager.h"
 
+#include "Actions/CorrbolgActionContextFragments.h"
 #include "Inventory/Definitions/CorrbolgInventoryDefinitions.h"
 #include "Items/Definitions/CorrbolgItemDefinition.h"
 #include "Items/Definitions/Fragments/CorrbolgUIFragment.h"
 
-void UCorrbolgPrintDataToLog::PerformAction(const FCorrbolgActionContext& ActionContext) const
+void UCorrbolgPrintDataToLog::PerformAction(const FCorrbolgActionContext& ActionContext)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Trying to print stored inventory entries, but this function is not implemented!"));
+	const FCorrbolgLogContextFragment* const LogFragment = Context.Payload.GetPtr<FCorrbolgLogContextFragment>();
+	ensureMsgf(LogFragment != nullptr, TEXT("Trying to log but the payload was not valid for this action, logging with reduced data!"));
 
 	UAssetManager& AssetManager = UAssetManager::Get();
 
-	FString StoredItemsString = "";
+	FString EntriesInfo = "";
 
+	// Get the Name and StackSize of each entry.
 	for (const FCorrbolgInventoryEntry& Entry : *Context.Inventory)
 	{
+		if (!Entry.IsValid())
+		{
+			EntriesInfo.Append("\nInvalid Entry");
+			continue;
+		}
+		
 		const FPrimaryAssetId& AssetId = Entry.GetAssetId();
 		AssetManager.LoadPrimaryAsset(AssetId);
 
@@ -25,19 +34,20 @@ void UCorrbolgPrintDataToLog::PerformAction(const FCorrbolgActionContext& Action
 			continue;
 		}
 
+		// What is the name of the item?
+		FString ItemName = Item->GetName();
+
+		// Overwrite with the UI name if possible.
 		const UCorrbolgUIFragment* const UIFragment = Item->FindFragmentOfClass<UCorrbolgUIFragment>();
-		if (!UIFragment)
+		if (UIFragment && LogFragment)
 		{
-			continue;
+			ItemName = UIFragment->FindText(LogFragment->UINameTag)->ToString();
 		}
 
-		// TODO: Koen: Get the GameplayTag from the payload, then get that text from the uifragment.
-		//StoredItemsString.Append(UIFragment->FindText());
-		StoredItemsString.Append(Item->GetName());
-		StoredItemsString.Append(", ");
+		EntriesInfo.Append(FString::Format(TEXT("\nItem: {0}, StackSize: {1}"), { ItemName, Entry.GetStackSize()}));
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("Stored Items : %s"), *StoredItemsString);
+	UE_LOG(LogTemp, Log, TEXT("Stored Items : %s"), *EntriesInfo);
 	
-	OnActionFinished.Broadcast(ECorrbolgActionResult::Success);
+	FinishAction(ECorrbolgActionResult::Success);
 }

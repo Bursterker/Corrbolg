@@ -4,14 +4,12 @@
 
 #include "Inventory/SaveGame/CorrbolgInventorySaveGame.h"
 
-void UCorrbolgSaveDataOnClient::PerformAction(const FCorrbolgActionContext& ActionContext) const
+void UCorrbolgSaveDataOnClient::PerformAction(const FCorrbolgActionContext& ActionContext)
 {
 	SaveInventory_Server_Implementation();
-
-	OnActionFinished.Broadcast(ECorrbolgActionResult::Success);
 }
 
-void UCorrbolgSaveDataOnClient::SaveInventory_Client_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData) const
+void UCorrbolgSaveDataOnClient::SaveInventory_Client_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData)
 {
 	UCorrbolgInventorySaveGame* const SaveGameInstance =
 		Cast<UCorrbolgInventorySaveGame>(
@@ -22,12 +20,17 @@ void UCorrbolgSaveDataOnClient::SaveInventory_Client_Implementation(const FCorrb
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, CorrbolgSaveGame::SaveSlotName, CorrbolgSaveGame::SaveUserIndex);
 }
 
-void UCorrbolgSaveDataOnClient::SaveInventory_Server_Implementation() const
+void UCorrbolgSaveDataOnClient::SaveInventory_Server_Implementation()
 {
 	FCorrbolgInventorySaveGameData SaveData = FCorrbolgInventorySaveGameData();
 
 	for (const FCorrbolgInventoryEntry& Entry : *Context.Inventory)
 	{
+		if(!Entry.IsValid())
+		{
+			continue;
+		}
+
 		FCorrbolgInventoryEntrySaveGameData SavedEntry = FCorrbolgInventoryEntrySaveGameData();
 		SavedEntry.ObjectId = Entry.GetObjectId();
 		SavedEntry.StackSize = Entry.GetStackSize();

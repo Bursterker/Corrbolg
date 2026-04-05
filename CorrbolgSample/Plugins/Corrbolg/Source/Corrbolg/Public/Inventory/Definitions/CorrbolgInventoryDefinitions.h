@@ -22,6 +22,17 @@ public:
 	*/
 	FCorrbolgInventoryEntry(const FGuid& Id, const FPrimaryAssetId& AssetId, const int Count);
 
+#pragma region Core
+public:
+	const bool IsValid() const;
+
+protected:
+	void Reset();
+
+#pragma endregion
+
+#pragma region Data
+public:
 	const FGuid& GetObjectId() const { return ObjectId; };
 	const FPrimaryAssetId& GetAssetId() const { return PrimaryAssetId; };
 	const int32 GetStackSize() const { return StackSize; };
@@ -33,18 +44,32 @@ protected:
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGuid ObjectId = FGuid();
-	
+
 	/**
 	* The asset Id of the asset containing the represented object data.
 	* Used to directly load data with the asset manager.
-	* Set at runtime to ensure stability between updates. 
+	* Set at runtime to ensure stability between updates.
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient)
 	FPrimaryAssetId PrimaryAssetId = FPrimaryAssetId();
-	
+
 	/**
 	* Amount of instances stored in this entry.
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient)
 	int32 StackSize = 0;
+#pragma endregion
+
+#pragma region Modifiers
+public:
+	/** Increases the size of the stack with the given amount. */
+	void IncreaseStackSize(const int32 Amount);
+
+	/**
+	* Decreases the size of the stack with the given amount. If the stack size reaches 0, the entry is reset.
+	* @Return: The remaining amount that was not removed from the stack.
+	*/
+	int DecreaseStackSize(const int32 Amount);
+
+#pragma endregion
 };

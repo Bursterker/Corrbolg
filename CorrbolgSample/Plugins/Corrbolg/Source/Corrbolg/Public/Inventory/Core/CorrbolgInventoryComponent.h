@@ -27,15 +27,20 @@ public:
 	UCorrbolgInventoryComponent();
 
 protected:
-	/** Container holding all items stored in the inventory.*/
-	UPROPERTY(Replicated)
-	TArray<FCorrbolgInventoryEntry> StoredEntries = TArray<FCorrbolgInventoryEntry>();
-
+	/** Settings to apply to this inventory. */
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UCorrbolgInventorySettings> InventorySettings = nullptr;
 
 	/** Executed at the start of the lifetime of the component after initialization has finished. */
 	virtual void BeginPlay() override;
+
+#pragma region Core
+private:
+	/** Container holding all items stored in the inventory. */
+	UPROPERTY(Replicated)
+	TArray<FCorrbolgInventoryEntry> StoredEntries = TArray<FCorrbolgInventoryEntry>();
+
+#pragma endregion
 
 #pragma region Replication
 protected:

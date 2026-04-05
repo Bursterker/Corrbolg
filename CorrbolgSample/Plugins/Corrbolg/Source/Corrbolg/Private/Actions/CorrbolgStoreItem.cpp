@@ -4,14 +4,12 @@
 
 #include "Actions/CorrbolgActionContextFragments.h"
 
-void UCorrbolgStoreItem::PerformAction(const FCorrbolgActionContext& ActionContext) const
+void UCorrbolgStoreItem::PerformAction(const FCorrbolgActionContext& ActionContext)
 {
 	StoreItem_Server_Implementation();
-
-	OnActionFinished.Broadcast(ECorrbolgActionResult::Success);
 }
 
-void UCorrbolgStoreItem::StoreItem_Server_Implementation() const
+void UCorrbolgStoreItem::StoreItem_Server_Implementation()
 {
 	const FCorrbolgStorageContextFragment* const StorageFragment = Context.Payload.GetPtr<FCorrbolgStorageContextFragment>();
 	if (!ensureMsgf(StorageFragment != nullptr, TEXT("Trying to store an item but the payload was not valid for this action!")))
@@ -31,11 +29,54 @@ void UCorrbolgStoreItem::StoreItem_Server_Implementation() const
 		return;
 	}
 
-	const FGuid ItemId = ItemDefinition->GetId();
-	const FPrimaryAssetId AssetId = ItemDefinition->GetPrimaryAssetId();
+	// If the item is stackable, check if there is an entry and increase the stack size.
+	int RemainingStackSize = StorageFragment->StackSize;
 
-	FCorrbolgInventoryEntry EntryData = FCorrbolgInventoryEntry(ItemId, AssetId, StorageFragment->StackSize);
+	if (InventoryFragment->GetIsStackable())
+	{
+		for (FCorrbolgInventoryEntry& Entry : *Context.Inventory)
+		{
+			const bool bIsSameItem = Entry.GetObjectId() == ItemDefinition->GetId(); // Is this entry the same item?
+			const bool bHasStackLimit = InventoryFragment->GetRecommendedMaxStackSize() > 0; // Is there a stack limit?
+			const bool bCanIncreaseStack = Entry.GetStackSize() < InventoryFragment->GetRecommendedMaxStackSize(); // Entry stack smaller than the stack limit?
 
-	// TODO: Koen: Use the inventory fragment to check if the item is stackable and then search an existing entry and increase the stacksize instead of adding an entry.
-	Context.Inventory->Add(EntryData);
+			if (bIsSameItem && (!bHasStackLimit || bCanIncreaseStack))
+			{
+				const int SpaceLeftInStack = InventoryFragment->GetRecommendedMaxStackSize() - Entry.GetStackSize();
+				const int AmountToAddToStack = bHasStackLimit ? FMath::Min(SpaceLeftInStack, RemainingStackSize) : RemainingStackSize;
+
+				Entry.IncreaseStackSize(AmountToAddToStack);
+				RemainingStackSize -= AmountToAddToStack;
+
+				if (RemainingStackSize <= 0)
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	// If there is still some of the stack left, add a new entry to the inventory.
+	if(RemainingStackSize > 0)
+	{
+		const FGuid ItemId = ItemDefinition->GetId();
+		const FPrimaryAssetId AssetId = ItemDefinition->GetPrimaryAssetId();
+		
+		FCorrbolgInventoryEntry EntryData = FCorrbolgInventoryEntry(ItemId, AssetId, RemainingStackSize);
+		
+		// Are there any invalid entries to overwrite?
+		FCorrbolgInventoryEntry* const AvailableEntry = Context.Inventory->FindByPredicate([](const FCorrbolgInventoryEntry& Entry)
+		{
+			return !Entry.IsValid();
+		});
+
+		if (AvailableEntry)
+		{
+			*AvailableEntry = EntryData;
+		}
+		else
+		{
+			Context.Inventory->Add(EntryData);
+		}
+	}
 }

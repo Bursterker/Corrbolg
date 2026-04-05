@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 
 #include "Items/Definitions/CorrbolgItemDefinition.h"
 
@@ -43,4 +44,18 @@ public:
 	/** The database containing item definitions. */
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UDataTable> ItemTable = nullptr;
+};
+
+/**
+* Contains context data for log related actions..
+*/
+USTRUCT(BlueprintType)
+struct FCorrbolgLogContextFragment : public FCorrbolgActionContextFragment
+{
+	GENERATED_BODY()
+
+public:
+	/** The gameplay tag to identify the name tag in the ui fragment. */
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayTag UINameTag = FGameplayTag::EmptyTag;
 };

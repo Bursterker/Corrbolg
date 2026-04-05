@@ -27,7 +27,7 @@ struct FCorrbolgInventoryEntrySaveGameData
 	FGuid ObjectId = FGuid();
 
 	/** Amount of instances stored in the entry to save. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 StackSize = 0;
 };
 

@@ -14,6 +14,6 @@ class CORRBOLG_API UCorrbolgPrintDataToLog : public UCorrbolgAction
 	GENERATED_BODY()
 	
 protected:
-	virtual void PerformAction(const FCorrbolgActionContext& ActionContext) const override;
+	virtual void PerformAction(const FCorrbolgActionContext& ActionContext) override;
 
 };
