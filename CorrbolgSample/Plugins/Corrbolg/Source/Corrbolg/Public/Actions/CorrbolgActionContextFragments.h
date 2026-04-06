@@ -6,6 +6,7 @@
 
 #include "CorrbolgActionContextFragments.generated.h"
 
+// TODO: Koen: Creating a separate context is cumbersome, have the context be a variable table instead using gameplay tags as identifiers.
 /** Base type for context fragments. Used to filter available structs in editor dropdowns. */
 USTRUCT(BlueprintType)
 struct FCorrbolgActionContextFragment
@@ -23,11 +24,13 @@ struct FCorrbolgStorageContextFragment : public FCorrbolgActionContextFragment
 	GENERATED_BODY()
 
 public:
+	// TODO: Koen: The client shouldn't provide an item asset, only an item ID. The server is then responsible for fetching the data of the specified item. This cannot be part of the Client Payload.
 	/** The item to handle with the action. */
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UCorrbolgItemDefinition> Item = nullptr;
 
-	/** The amount to store/retrieve*/
+	// TODO: Koen: The client cannot provide a stacksize, the server can only get this information from itself. This cannot be part of the Client Payload.
+	/** The amount to store/retrieve. */
 	UPROPERTY(BlueprintReadWrite)
 	int StackSize = 0;
 };
@@ -41,6 +44,7 @@ struct FCorrbolgSaveGameContextFragment : public FCorrbolgActionContextFragment
 	GENERATED_BODY()
 
 public:
+	// TODO: Koen: The ItemTable should not be passed from the client, the client cannot delegate which table the server should use. The server needs to interpret it on its own. This cannot be part of the Client Payload.
 	/** The database containing item definitions. */
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UDataTable> ItemTable = nullptr;

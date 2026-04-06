@@ -64,6 +64,7 @@ void UCorrbolgInventoryComponent::ExecuteAction_Server_Implementation(const FGam
 	Context.Payload = Payload;
 	Context.Callback = [this](const ECorrbolgActionResult Result){this->OnActionExecutionFinished(Result); };
 
+	// TODO: Koen: Actions should be executable on the client. Example: Retrieving the items in inventory for UI purposes.
 	ActiveAction->Execute_Server(Context);
 }
 

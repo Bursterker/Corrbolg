@@ -58,6 +58,8 @@ protected:
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient)
 	int32 StackSize = 0;
+
+	// TODO: Koen: Define a MaxStackSize to avoid Overflows.
 #pragma endregion
 
 #pragma region Modifiers
