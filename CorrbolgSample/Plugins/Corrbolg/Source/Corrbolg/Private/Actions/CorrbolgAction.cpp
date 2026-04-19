@@ -1,28 +1,54 @@
 #include "Actions/CorrbolgAction.h"
 
-void UCorrbolgAction::Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext)
+#pragma region Core
+void UCorrbolgAction::Initialize(UActorComponent* const InventoryComponent, const FInstancedStruct& InPayload, TFunction<void(ECorrbolgActionResult)> Callback)
 {
-	// Setup the action based on the given context.
-	SetupAction(ActionContext);
+	Context.InventoryComponent = InventoryComponent;
+	Context.Payload = InPayload;
 
-	// Execute the action and notify listeners.
-	PerformAction(ActionContext);
+	ActionState = EActionState::ReadyToStart;
 
-	if (!bIsAsyncAction)
+	OnActionFinished.AddLambda(Callback);
+}
+
+void UCorrbolgAction::Execute()
+{
+	if (IsAuthorative())
 	{
-		FinishAction(ECorrbolgActionResult::Success);
+		// Server Logic
+		Server_PerformAction();
+	}
+	else
+	{
+		// Client Logic
+		Client_PerformAction();
 	}
 }
 
-void UCorrbolgAction::SetupAction(const FCorrbolgActionContext& ActionContext)
+void UCorrbolgAction::Finish(const ECorrbolgActionResult Result)
 {
-	Context = ActionContext;
+	ActionState = EActionState::Finished;
 
-	OnActionFinished.AddLambda(ActionContext.Callback);
-}
-
-void UCorrbolgAction::FinishAction(const ECorrbolgActionResult Result)
-{
 	OnActionFinished.Broadcast(Result);
 	OnActionFinished.Clear();
 }
+#pragma endregion
+
+#pragma region Replication
+bool UCorrbolgAction::IsAuthorative() const
+{
+	return IsValid(Context.InventoryComponent) && IsValid(Context.InventoryComponent->GetOwner()) && Context.InventoryComponent->GetOwner()->HasAuthority();
+}
+#pragma endregion
+
+#pragma region Behavior
+void UCorrbolgAction::Server_PerformAction_Implementation()
+{
+	ActionState = EActionState::InProgress;
+}
+
+void UCorrbolgAction::Client_PerformAction_Implementation()
+{
+	ActionState = EActionState::InProgress;
+}
+#pragma endregion

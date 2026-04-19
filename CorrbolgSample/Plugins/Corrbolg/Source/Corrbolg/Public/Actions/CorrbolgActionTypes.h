@@ -6,6 +6,15 @@
 
 #include "CorrbolgActionTypes.generated.h"
 
+UENUM()
+enum class EActionState
+{
+	Invalid,
+	ReadyToStart,
+	InProgress,
+	Finished
+};
+
 /*
 * Result of an action that was executed.
 */
@@ -27,14 +36,10 @@ struct FCorrbolgActionContext
 
 public:
 	/** The inventory component being handled. */
-	UActorComponent* Owner = nullptr;
+	UPROPERTY(Transient)
+	TObjectPtr<UActorComponent> InventoryComponent = nullptr;
 
-	/** The inventory to execute an action on. */
-	TArray<FCorrbolgInventoryEntry>* Inventory = nullptr;
-
-	/** Additional data specific to the action, will be of a various types. */
-	FInstancedStruct Payload = FInstancedStruct();
-
-	/** Callback to execute when the action is finished. */
-	TFunction<void(ECorrbolgActionResult)> Callback;
+	/** Payload data given when requesting the action. */
+	UPROPERTY(Transient)
+	FInstancedStruct Payload;
 };

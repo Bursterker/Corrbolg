@@ -16,22 +16,12 @@ class CORRBOLG_API UCorrbolgLoadDataFromClient : public UCorrbolgAction
 	GENERATED_BODY()
 
 protected:
-	virtual void SetupAction(const FCorrbolgActionContext& ActionContext) override;
-	virtual void PerformAction(const FCorrbolgActionContext& ActionContext) override;
+	virtual void Client_PerformAction_Implementation() override;
+	virtual void Server_PerformAction_Implementation() override;
 
-	/** Reads the inventory data from the save game and sends it to the server for replication. */
-	UFUNCTION(Client, Reliable, Category = "Action|SaveData")
-	virtual void LoadInventory_Client();
-	virtual void LoadInventory_Client_Implementation();
+	UFUNCTION(Client, Reliable)
+	void Client_GatherSaveData();
 
-	/** Request the client for the local save game data. */
-	UFUNCTION(Server, Reliable, Category = "Action|SaveData")
-	virtual void LoadInventory_Server();
-	virtual void LoadInventory_Server_Implementation();
-
-	/** Replicates the received local save game to all clients. */
-	UFUNCTION(Server, Reliable, Category = "Action|SaveData")
-	virtual void OnSaveDataReceived_Server(const FCorrbolgInventorySaveGameData& SaveGameData);
-	virtual void OnSaveDataReceived_Server_Implementation(const FCorrbolgInventorySaveGameData& SaveGameData);
-
+	UFUNCTION(Server, Reliable)
+	void Server_ReceiveSaveData(const FCorrbolgInventorySaveGameData& SaveGameData);
 };

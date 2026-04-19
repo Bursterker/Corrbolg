@@ -14,10 +14,7 @@ class CORRBOLG_API UCorrbolgStoreItem : public UCorrbolgAction
 	GENERATED_BODY()
 	
 protected:
-	virtual void PerformAction(const FCorrbolgActionContext& ActionContext) override;
+	virtual void Client_PerformAction_Implementation() override;
 
-	/** Stores an item in the inventory. */
-	UFUNCTION(Server, Reliable, Category = "Action|Manipulation")
-	virtual void StoreItem_Server();
-	virtual void StoreItem_Server_Implementation();
+	virtual void Server_PerformAction_Implementation() override;
 };

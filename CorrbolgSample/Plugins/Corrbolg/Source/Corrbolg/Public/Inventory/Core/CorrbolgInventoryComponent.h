@@ -35,6 +35,10 @@ protected:
 	virtual void BeginPlay() override;
 
 #pragma region Core
+public:
+	const TArray<FCorrbolgInventoryEntry>& GetStoredEntries() const { return StoredEntries; };
+	TArray<FCorrbolgInventoryEntry>& GetStoredEntries() { return StoredEntries; };
+
 private:
 	/** Container holding all items stored in the inventory. */
 	UPROPERTY(Replicated)
@@ -46,35 +50,22 @@ private:
 protected:
 	/** Registers properties for replication */
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	/** Checks if this lives on a server or authorative client. */
-	virtual bool IsAuthorative() const;
 #pragma endregion
 
 #pragma region Actions
 public:
-	/** Asks the server to perform an action on the inventory. */
+	/** Request execution of an action can be called from Client and Server. */
 	UFUNCTION(BlueprintCallable, Category = "Action")
-	virtual void ExecuteAction_Client(const FGameplayTag& ActionId, const FInstancedStruct& Payload = FInstancedStruct());
+	virtual void RequestAction(const FGameplayTag& ActionId, const FInstancedStruct& Payload = FInstancedStruct());
 
-	/** Calls the relevant action to execute on the inventory. */
-	UFUNCTION(Server, Reliable)
-	virtual void ExecuteAction_Server(const FGameplayTag& ActionId, const FInstancedStruct& Payload = FInstancedStruct());
-	virtual void ExecuteAction_Server_Implementation(const FGameplayTag& ActionId, const FInstancedStruct& Payload = FInstancedStruct());
+	/** Processes the action queue, handling actions in order. */
+	void ProcessActionQueue();
 
 protected:
-	UPROPERTY(Transient)
-	TMap<FGameplayTag, TObjectPtr<UCorrbolgAction>> ActionInstanceMap;
+	/** Retrieves the action template class for a given action ID. */
+	virtual TSoftClassPtr<UCorrbolgAction>* GetActionTemplate(const FGameplayTag& ActionId);
 
-	UPROPERTY(Transient)
-	TObjectPtr<UCorrbolgAction> ActiveAction = nullptr;
-
-	/** Callback from when any action has finished. */
-	UFUNCTION()
-	virtual void OnActionExecutionFinished(const ECorrbolgActionResult Result);
-	
-	/** Initialize the actions from the settings. */
-	UFUNCTION()
-	virtual void InitializeActions();
+	/** Queue holding all pending actions to be processed. */
+	TQueue<TObjectPtr<UCorrbolgAction>> ActionQueue;
 #pragma endregion
 };

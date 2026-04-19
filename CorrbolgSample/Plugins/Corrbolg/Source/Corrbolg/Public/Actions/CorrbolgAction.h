@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 
 #include "Actions/CorrbolgActionTypes.h"
 
@@ -10,40 +9,53 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FCorrbolgOnActionFinished, const ECorrbolgActionResult);
 
 /**
-* Base Interface to perform an action on the CorrbolgInventory.
-* Children are required to atleast implement the following:
-* - Implement PerformAction_Server
-* - Call FinishAction if bIsAsyncAction is true.
+* Base class to perform an action on the CorrbolgInventory.
+* Children are required to integrate the following changes:
+* - Override: Client_PerformAction
+* - Override: Server_PerformAction
+* - Call: Finish
 */
 UCLASS(Abstract)
 class CORRBOLG_API UCorrbolgAction : public UObject
 {
 	GENERATED_BODY()
-	
+
+#pragma region Core
 public:
-	/** Sets up the action and executes it. */
-	UFUNCTION(Server, Reliable, Category = "Action")
-	void Execute_Server(const FCorrbolgActionContext& ActionContext);
-	void Execute_Server_Implementation(const FCorrbolgActionContext& ActionContext);
+	virtual void Initialize(UActorComponent* const InventoryComponent, const FInstancedStruct& InPayload, TFunction<void(ECorrbolgActionResult)> Callback);
+
+	/** Executes behavior based on wether the action is being called from the Client or Server. */
+	void Execute();
+
+	/** Returns the current state of the action. */
+	EActionState GetActionState() const { return ActionState; }
 
 protected:
 	/** The context the action was called for. */
 	FCorrbolgActionContext Context = FCorrbolgActionContext();
 
-	/** Will this action during execution wait for external execution? */
-	bool bIsAsyncAction = false;
-
-	/** Setup required variables for access during execution. */
-	virtual void SetupAction(const FCorrbolgActionContext& ActionContext);
-
-	/** Clean up the action making it available for newxt use. */
-	virtual void FinishAction(const ECorrbolgActionResult Result);
-
-	/** Executes the defined behavior. */
-	virtual void PerformAction(const FCorrbolgActionContext& ActionContext) PURE_VIRTUAL(UCorrbolgAction::PerformAction);
+	virtual void Finish(const ECorrbolgActionResult Result);
 
 private:
-	/** Delegate fired when the execution of the action has completed. */
-	FCorrbolgOnActionFinished OnActionFinished = FCorrbolgOnActionFinished();
+	/** The current state of the action. */
+	EActionState ActionState = EActionState::Invalid;
 
+	/** Delegate fired when the execution of the action has finished. */
+	FCorrbolgOnActionFinished OnActionFinished = FCorrbolgOnActionFinished();
+#pragma endregion
+
+#pragma region Replication
+public:
+	bool IsAuthorative() const;
+
+#pragma endregion
+
+#pragma region Behavior
+protected:
+	UFUNCTION(Client, Reliable)
+	virtual void Client_PerformAction();
+	
+	UFUNCTION(Server, Reliable)
+	virtual void Server_PerformAction();
+#pragma endregion
 };

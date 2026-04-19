@@ -16,10 +16,7 @@ class CORRBOLG_API UCorrbolgRetrieveItem : public UCorrbolgAction
 	GENERATED_BODY()
 	
 protected:
-	virtual void PerformAction(const FCorrbolgActionContext& ActionContext) override;
+	virtual void Client_PerformAction_Implementation() override;
 
-	/** Retrives an item from the inventory. */
-	UFUNCTION(Server, Reliable, Category = "Action|Manipulation")
-	virtual void RetrieveItem_Server();
-	virtual void RetrieveItem_Server_Implementation();
+	virtual void Server_PerformAction_Implementation() override;
 };
