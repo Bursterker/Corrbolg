@@ -1,0 +1,10 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+#include "NativeGameplayTags.h"
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Corrbolg_Inventory_Action_LoadFromClient);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Corrbolg_Inventory_Action_Log);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Corrbolg_Inventory_Action_Retrieve);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Corrbolg_Inventory_Action_SaveToClient);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Corrbolg_Inventory_Action_Store);
